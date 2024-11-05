@@ -8,25 +8,28 @@ import { api } from '../services/api'
 
 function App() {
 
-  const [currentRepo, setCurrentRepo] = useState('[]')
+  const [currentRepo, setCurrentRepo] = useState('')
   const [repos, setRepos] = useState([])
 
   const handleSearchRepo = async () => {
 
-    const {data} = await api.get(`repos/${currentRepo}`)
-    
-    if (data.id) {
+    try {
+      const { data } = await api.get(`repos/${currentRepo}`);
+      
+      if (data.id) {
+        const isExist = repos.find(repo => repo.id === data.id);
 
-      const isExist = repos.find(repo => repo.id === data.id)
-
-      if (!isExist) {
-        setRepos(prev => [...prev, data])
-        setCurrentRepo('')
-        return
+        if (!isExist) {
+          setRepos(prev => [...prev, data]);
+          setCurrentRepo('');
+          return;
+        }
       }
+      alert('Repositório já adicionado ou não encontrado');
+    } catch (error) {
+      alert('Erro ao buscar o repositório');
     }
-    alert('Repositório não encontrado')
-  }
+  };
 
   const handleRemoveRepo = (id) => {
     const removeItem = repos.filter(repo => repo.id !== id)
